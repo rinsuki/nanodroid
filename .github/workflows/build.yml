@@ -6,7 +6,8 @@ on:
 jobs:
   build:
     env:
-      NANO_VERSION: 5.8
+      NCURSES_VERSION: "6.2"
+      NANO_VERSION: "5.8"
     strategy:
       matrix:
         arch:
@@ -15,17 +16,21 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
-    - name: Download Sources
-      run: wget https://www.nano-editor.org/dist/v5/nano-${{ env.NANO_VERSION }}.tar.xz
+    - name: Download and Extract Sources
+      run: |
+        wget https://ftp.gnu.org/pub/gnu/ncurses/ncurses-${{ env.NCURSES_VERSION }}.tar.gz
+        wget https://www.nano-editor.org/dist/v5/nano-${{ env.NANO_VERSION }}.tar.xz
+    - name: Extract Sources
+      run: |
+        tar xf nano-${{ env.NANO_VERSION }}.tar.xz
+        tar xf ncurses-${{ env.NCURSES_VERSION }}.tar.gz
+        mv nano-${{ env.NANO_VERSION }} nano
+        mv ncurses-${{ env.NCURSES_VERSION }} ncurses
     - name: Setup QEMU static
       if: matrix.arch != 'amd64'
       uses: docker/setup-qemu-action@v1
       with:
         platforms: ${{ matrix.arch }}
-    - name: Extract Sources
-      run: |
-        tar xf nano-${{ env.NANO_VERSION }}.tar.xz
-        mv nano-${{ env.NANO_VERSION }} nano
     - name: Build in Docker
       run: |
         docker buildx build --platform linux/${{ matrix.arch }} -t nano:latest --output type=local,dest=./dest .
