@@ -1,0 +1,35 @@
+name: Build
+
+on:
+- push
+
+jobs:
+  build:
+    env:
+      NANO_VERSION: 5.8
+    strategy:
+      matrix:
+        arch:
+        - x86_64
+        - aarch64
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Download Sources
+      run: wget https://www.nano-editor.org/dist/v5/nano-${{ env.NANO_VERSION }}.tar.xz
+    - name: Install Toolchains
+      run: sudo apt install g++-${{ matrix.arch }}-linux-gnu
+      if: matrix.arch != 'x86_64'
+    - name: Extract Sources
+      run: |
+        tar xf nano-${{ env.NANO_VERSION }}.tar.xz
+        mv nano-${{ env.NANO_VERSION }} nano
+    - name: Build nano
+      run: |
+        ./configure --enable-utf8 --host=${{ matrix.arch }}-linux-gnu --enable-static
+        make -j2
+    - name: Archive
+      uses: actions/upload-artifact@v2
+      with:
+        name: nano-${{ matrix.arch }}
+        path: nano/src/nano
+    
