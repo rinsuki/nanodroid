@@ -22,7 +22,7 @@ jobs:
         mv nano-${{ env.NANO_VERSION }} nano
     - name: Build in Docker
       run: |
-        docker buildx build --platform linux/${{ env.arch }} -t nano:latest --output type=local,dest=./dest .
+        docker buildx build --platform linux/${{ matrix.arch }} -t nano:latest --output type=local,dest=./dest .
     - name: Archive
       uses: actions/upload-artifact@v2
       with:
