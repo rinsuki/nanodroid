@@ -25,6 +25,7 @@ jobs:
         mv nano-${{ env.NANO_VERSION }} nano
     - name: Build nano
       run: |
+        cd nano
         ./configure --enable-utf8 --host=${{ matrix.arch }}-linux-gnu --enable-static
         make -j2
     - name: Archive
