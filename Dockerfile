@@ -1,6 +1,6 @@
 FROM alpine:3.14 as build
 
-RUN apk --no-cache add gcc make linux-headers musl-dev zlib-dev zlib-static
+RUN apk --no-cache add gcc make linux-headers musl-dev zlib-dev zlib-static ncurses-terminfo
 WORKDIR /ncurses
 ADD ./ncurses .
 RUN ./configure LDFLAGS="-static -no-pie -s" --disable-terminfo --with-fallbacks=xterm-256color,xterm-16color,xterm,vt100 --without-xterm-new --with-termlib --enable-termcap
